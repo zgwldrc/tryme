@@ -1,9 +1,27 @@
 set -e
-docker login -u$REGISTRY_USER -p$REGISTRY_PASSWD $REGISTRY
-
 APP_INFOS_FILE=/tmp/app-infos.txt
-curl -s https://raw.githubusercontent.com/wanshare8888/tryme/master/biteme.txt -o $APP_INFOS_FILE
 
+ENV_CHECK_LIST='
+REGISTRY_USER
+REGISTRY_PASSWD
+REGISTRY
+REGISTRY_NAMESPACE
+CI_COMMIT_TAG
+CI_COMMIT_SHA
+'
+function die(){
+  echo "Error: $@"
+  exit 1
+}
+function check_env(){
+  local r
+  for i do
+    eval "r=\${${i}:-undefined}"
+    if [ "$r" == "undefined" ];then
+      die "Env Variable $i is undefined."
+    fi
+  done
+}
 function build_app(){
     local app_name=$1
     local pkg_prefix=$2
@@ -19,6 +37,14 @@ function build_app(){
 
     docker push $image_url
 }
+
+check_env $ENV_CHECK_LIST
+
+
+docker login -u$REGISTRY_USER -p$REGISTRY_PASSWD $REGISTRY
+
+
+curl -s https://raw.githubusercontent.com/wanshare8888/tryme/master/biteme.txt -o $APP_INFOS_FILE
 
 
 if echo "$CI_COMMIT_TAG" | grep -Eq "release-all";then
@@ -39,10 +65,10 @@ else
         fi
     done
     IFS="$O_IFS"
-    
+
     if [ ! -s build_list ];then
         echo build_list size is 0, nothing to do.
-        exit 0
+        exit 1
     fi
     # 为mvn命令行构造模块列表参数
     mod_args=$(echo `awk '{print $2}' build_list` | tr ' ' ',')
