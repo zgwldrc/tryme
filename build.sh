@@ -1,3 +1,8 @@
+# 作者: 夏禹
+# 邮箱: zgwldrc@163.com
+# 运行环境: zgwldrc/maven-and-docker
+# docker run --rm -it zgwldrc/maven-and-docker sh
+# 该脚本用于crush项目在gitlab-ci系统中的构建
 set -e
 function include_url_lib() {
   local t="$(mktemp)"
@@ -16,14 +21,16 @@ function check_env(){
     fi
   done
 }
+
+# 检查必要的环境变量
 ENV_CHECK_LIST='
+REGISTRY
 REGISTRY_USER
 REGISTRY_PASSWD
-REGISTRY
 REGISTRY_NAMESPACE
-CI_COMMIT_SHA
 '
 check_env $ENV_CHECK_LIST
+
 docker login -u$REGISTRY_USER -p$REGISTRY_PASSWD $REGISTRY
 
 function build_app(){
@@ -42,27 +49,22 @@ function build_app(){
 APP_INFOS_FILE=/tmp/app-infos.txt
 curl -s https://raw.githubusercontent.com/wanshare8888/tryme/master/biteme.txt -o $APP_INFOS_FILE
 
-if [ "$CI_COMMIT_REF_NAME" == "master" ];then
-  # 构建所有
-  mvn -U clean package
-  cat $APP_INFOS_FILE | grep -Ev '^#|crush-config-server' > build_list
-  cat build_list | awk '{print $1,$3,$4}' | while read line;do
-    build_app $line
-  done
-else
-  if echo "$CI_COMMIT_TAG" | grep -Eq "release-all";then
+if echo "$CI_COMMIT_REF_NAME" | grep -Eq "release-all" || [ "$BUILD_LIST" == "release-all" ] ;then
     # 构建所有
     mvn -U clean package
     cat $APP_INFOS_FILE | grep -Ev '^#|crush-config-server' | tee build_list | grep -v "crush-flyway" | awk '{print $1}' > deploy_list
     cat build_list | awk '{print $1,$3,$4}' | while read line;do
-      build_app $line
+        build_app $line
     done
-  else
+else
+    if [ "$CI_COMMIT_REF_NAME" != "master" ];then
+        BUILD_LIST="$CI_COMMIT_REF_NAME"       
+    fi
     # 构建TAG中包含的模块
     # 根据TAG过滤出需要构建的列表 build_list
     O_IFS="$IFS"
     IFS="#"
-    for i in $CI_COMMIT_TAG;do
+    for i in $BUILD_LIST;do
         if app=$(grep "^$i[[:blank:]]" $APP_INFOS_FILE);then
             echo "$app" >> build_list
         fi
@@ -80,7 +82,5 @@ else
     awk '{print $1,$3,$4}' build_list | while read line;do
         build_app $line
     done
-
     awk '{print $1}' build_list | grep -Ev 'crush-config-server|crush-flyway' > deploy_list
-  fi
 fi
