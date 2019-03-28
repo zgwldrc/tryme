@@ -1,6 +1,20 @@
 set -e
-APP_INFOS_FILE=/tmp/app-infos.txt
-
+function include_url_lib() {
+  local t="$(mktemp)"
+  local url="$1"
+  curl -s -o "$t" "$1"
+  . "$t"
+  rm -f "$t"
+}
+function check_env(){
+  local r
+  for i do
+    eval "r=\${${i}:-undefined}"
+    if [ "$r" == "undefined" ];then
+      return 1
+    fi
+  done
+}
 ENV_CHECK_LIST='
 REGISTRY_USER
 REGISTRY_PASSWD
@@ -9,39 +23,23 @@ REGISTRY_NAMESPACE
 CI_COMMIT_TAG
 CI_COMMIT_SHA
 '
-function die(){
-  echo "Error: $@"
-  exit 1
-}
-function check_env(){
-  local r
-  for i do
-    eval "r=\${${i}:-undefined}"
-    if [ "$r" == "undefined" ];then
-      die "Env Variable $i is undefined."
-    fi
-  done
-}
+check_env $ENV_CHECK_LIST
+docker login -u$REGISTRY_USER -p$REGISTRY_PASSWD $REGISTRY
+
 function build_app(){
     local app_name=$1
     local pkg_prefix=$2
     local build_context=$3
     local dockerfile=${4:-Dockerfile}
     local image_url=$REGISTRY/$REGISTRY_NAMESPACE/${app_name}:${CI_COMMIT_SHA:0:8}
-
     docker build -f $dockerfile \
         --build-arg PKG_NAME=${pkg_prefix}-2.0.0-SNAPSHOT.jar \
-        --build-arg CI_COMMIT_SHA=$CI_COMMIT_SHA \
         -t $image_url \
         $build_context
-
     docker push $image_url
 }
 
-check_env $ENV_CHECK_LIST
-
-docker login -u$REGISTRY_USER -p$REGISTRY_PASSWD $REGISTRY
-
+APP_INFOS_FILE=/tmp/app-infos.txt
 curl -s https://raw.githubusercontent.com/wanshare8888/tryme/master/biteme.txt -o $APP_INFOS_FILE
 
 if [ "$CI_COMMIT_REF_NAME" == "master" ];then
