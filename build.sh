@@ -40,22 +40,27 @@ function build_app(){
 
 check_env $ENV_CHECK_LIST
 
-
 docker login -u$REGISTRY_USER -p$REGISTRY_PASSWD $REGISTRY
-
 
 curl -s https://raw.githubusercontent.com/wanshare8888/tryme/master/biteme.txt -o $APP_INFOS_FILE
 
-
-if echo "$CI_COMMIT_TAG" | grep -Eq "release-all";then
-# 构建所有
+if [ "$CI_COMMIT_REF_NAME" == "master" ];then
+  # 构建所有
+  mvn -U clean package
+  cat $APP_INFOS_FILE | grep -Ev '^#|crush-config-server' > build_list
+  cat build_list | awk '{print $1,$3,$4}' | while read line;do
+    build_app $line
+  done
+elif [ "$CI_COMMIT_REF_NAME" == "dev" ];then
+  if echo "$CI_COMMIT_TAG" | grep -Eq "release-all";then
+    # 构建所有
     mvn -U clean package
-    cat $APP_INFOS_FILE | grep -v '^#' > build_list
+    cat $APP_INFOS_FILE | grep -Ev '^#|crush-config-server' | tee build_list | grep -v "crush-flyway" > deploy_list
     cat build_list | awk '{print $1,$3,$4}' | while read line;do
       build_app $line
     done
-else
-# 构建TAG中包含的模块
+  else
+    # 构建TAG中包含的模块
     # 根据TAG过滤出需要构建的列表 build_list
     O_IFS="$IFS"
     IFS="#"
@@ -77,4 +82,7 @@ else
     awk '{print $1,$3,$4}' build_list | while read line;do
         build_app $line
     done
+
+    awk '{print $1}' build_list | grep -Ev 'crush-config-server|crush-flyway' > deploy_list
+  fi
 fi
