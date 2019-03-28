@@ -11,7 +11,8 @@ function check_env(){
   for i do
     eval "r=\${${i}:-undefined}"
     if [ "$r" == "undefined" ];then
-      return 1
+      echo "$i is not defined"
+      exit 1
     fi
   done
 }
