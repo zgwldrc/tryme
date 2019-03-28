@@ -50,7 +50,7 @@ if [ "$CI_COMMIT_REF_NAME" == "master" ];then
   cat build_list | awk '{print $1,$3,$4}' | while read line;do
     build_app $line
   done
-elif [ "$CI_COMMIT_REF_NAME" == "dev" ];then
+else
   if echo "$CI_COMMIT_TAG" | grep -Eq "release-all";then
     # 构建所有
     mvn -U clean package
