@@ -1,1 +1,6 @@
-["DB8825APPAaYEUmpAynqQ/Wd6V6g+4LlfbZ2t6K1KjUjwECmpkuIn21sdpidJS9gcfLFEjXMKyOiazT5ybO5yA=="]
+{
+  "leasePeriodSeconds": 600,
+  "servers": [
+    "DB8825APPAaYEUmpAynqQ/Wd6V6g+4LlfbZ2t6K1KjUjwECmpkuIn21sdpidJS9gcfLFEjXMKyOiazT5ybO5yA=="
+  ] 
+}
