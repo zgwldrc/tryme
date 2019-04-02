@@ -40,7 +40,7 @@ function build_app(){
     local dockerfile=${4:-Dockerfile}
     local image_url=$REGISTRY/$REGISTRY_NAMESPACE/${app_name}:${CI_COMMIT_SHA:0:8}
     docker build -f $dockerfile \
-        --build-arg PKG_NAME=${pkg_prefix}-2.0.0-SNAPSHOT.jar \
+        --build-arg PKG_NAME=${pkg_prefix}-0.0.1-SNAPSHOT.jar \
         -t $image_url \
         $build_context
     docker push $image_url
