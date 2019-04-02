@@ -7,6 +7,7 @@ crush-tenant                webapps/tenant                tenant-web            
 crush-otc                   webapps/otc                   otc-web                 webapps/otc/target/
 crush-wallet                webapps/wallet                wallet-web              webapps/wallet/target/
 crush-websocket-publisher   webapps/websocket-publisher   websocket-publisher     webapps/websocket-publisher/target/
+crush-ybt                   webapps/ybt                   ybt                     webapps/ybt/target/
 crush-clearing-handler      apps/clearing-handler         clearing-handler        apps/clearing-handler/target/
 crush-stopprice-handler     apps/stopPrice-handler        stopPrice-handler       apps/stopPrice-handler/target/
 crush-dashboard-dataagent   apps/dashboard-dataagent      dashboard-dataagent     apps/dashboard-dataagent/target/
