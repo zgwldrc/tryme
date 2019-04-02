@@ -1,3 +1,8 @@
-# APPNAME               MODULE-PATH                   PKG-PREFIX
-ybt-main                webapps/main                  main-web
-ybt-staff               webapps/staff                 staff-web
+# APPNAME               MODULE-PATH                   ARTIFACTID        VERSION
+ybt-main                webapps/main                  main-web          0.0.1-SNAPSHOT
+ybt-staff               webapps/staff                 staff-web         0.0.1-SNAPSHOT
+ybt-sms-sender          workers/sms-sender            sms-sender        0.0.1-SNAPSHOT
+ybt-mail-sender         workers/mail-sender           mail-sender       0.0.1-SNAPSHOT
+ybt-otc-job             jobs/otc-job                  otc-job           0.0.1-SNAPSHOT
+ybt-security-job        jobs/security                 security-job      0.0.1-SNAPSHOT
+ybt-flyway              flyway                        flyway            2.0.0-SNAPSHOT
