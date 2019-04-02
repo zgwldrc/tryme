@@ -85,5 +85,5 @@ else
         #echo $app_name $package_name ${module_path}/target
         build_app $app_name $package_name ${module_path}/target
     done
-    awk '{print $1}' build_list | grep -Ev 'crush-config-server|crush-flyway' > deploy_list
+    awk '{print $1}' build_list | grep -Ev 'ybt-flyway' > deploy_list
 fi
