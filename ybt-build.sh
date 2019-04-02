@@ -35,12 +35,12 @@ docker login -u$REGISTRY_USER -p$REGISTRY_PASSWD $REGISTRY
 
 function build_app(){
     local app_name=$1
-    local pkg_prefix=$2
+    local package_name=$2
     local build_context=$3
     local dockerfile=${4:-Dockerfile}
     local image_url=$REGISTRY/$REGISTRY_NAMESPACE/${app_name}:${CI_COMMIT_SHA:0:8}
     docker build -f $dockerfile \
-        --build-arg PKG_NAME=${pkg_prefix}-0.0.1-SNAPSHOT.jar \
+        --build-arg PKG_NAME=${package_name} \
         -t $image_url \
         $build_context
     docker push $image_url
@@ -53,9 +53,10 @@ curl -s https://raw.githubusercontent.com/wanshare8888/tryme/master/ybt-applist.
 if echo "$CI_COMMIT_REF_NAME" | grep -Eq "release-all" || [ "$BUILD_LIST" == "release-all" ] ;then
     # 构建所有
     mvn -U clean package
-    cat $APP_INFOS_FILE | grep -Ev '^#|crush-config-server' | tee build_list | grep -v "crush-flyway" | awk '{print $1}' > deploy_list
-    cat build_list | awk '{print $1,$3,$2}' | while read app_name package_prefix module_path;do
-        build_app $app_name $package_prefix ${module_path}/target
+    cat $APP_INFOS_FILE | grep -Ev '^#|ybt-config-server' | tee build_list | grep -v "ybt-flyway" | awk '{print $1}' > deploy_list
+    cat build_list | awk '{print $1,$3"-"$4".jar",$2}' | while read app_name package_name module_path;do
+        #echo $app_name $package_name ${module_path}/target
+        build_app $app_name $package_name ${module_path}/target
     done
 else
     if [ "$CI_COMMIT_REF_NAME" != "master" ];then
