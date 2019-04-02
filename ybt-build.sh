@@ -54,8 +54,8 @@ if echo "$CI_COMMIT_REF_NAME" | grep -Eq "release-all" || [ "$BUILD_LIST" == "re
     # 构建所有
     mvn -U clean package
     cat $APP_INFOS_FILE | grep -Ev '^#|crush-config-server' | tee build_list | grep -v "crush-flyway" | awk '{print $1}' > deploy_list
-    cat build_list | awk '{print $1,$3,$4}' | while read line;do
-        build_app $line
+    cat build_list | awk '{print $1,$3,$2}' | while read app_name package_prefix module_path;do
+        build_app $app_name $package_prefix ${module_path}/target
     done
 else
     if [ "$CI_COMMIT_REF_NAME" != "master" ];then
