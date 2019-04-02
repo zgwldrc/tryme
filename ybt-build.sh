@@ -54,7 +54,7 @@ if echo "$CI_COMMIT_REF_NAME" | grep -Eq "release-all" || [ "$BUILD_LIST" == "re
     # 构建所有
     mvn -U clean package
     cat $APP_INFOS_FILE | grep -Ev '^#|ybt-config-server' | tee build_list | grep -v "ybt-flyway" | awk '{print $1}' > deploy_list
-    cat build_list | awk '{print $1,$3"-"$4".jar",$2}' | while read app_name package_name module_path;do
+    awk '{print $1,$3"-"$4".jar",$2}' build_list | while read app_name package_name module_path;do
         #echo $app_name $package_name ${module_path}/target
         build_app $app_name $package_name ${module_path}/target
     done
@@ -81,8 +81,9 @@ else
     mod_args=$(echo `awk '{print $2}' build_list` | tr ' ' ',')
     mvn clean package -U -pl $mod_args -am
     # 调用 build_app 完成 docker build 及 docker push
-    awk '{print $1,$3,$4}' build_list | while read line;do
-        build_app $line
+    awk '{print $1,$3"-"$4".jar",$2}' build_list | while read app_name package_name module_path;do
+        #echo $app_name $package_name ${module_path}/target
+        build_app $app_name $package_name ${module_path}/target
     done
     awk '{print $1}' build_list | grep -Ev 'crush-config-server|crush-flyway' > deploy_list
 fi
