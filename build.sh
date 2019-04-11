@@ -50,7 +50,7 @@ function build_app(){
 APP_INFOS_FILE=/tmp/app-infos.txt
 curl -s https://raw.githubusercontent.com/wanshare8888/tryme/master/biteme.txt -o $APP_INFOS_FILE
 
-if echo "$CI_COMMIT_REF_NAME" | grep -Eq "release-all" || [ "$BUILD_LIST" == "release-all" ] ;then
+if echo "$CI_COMMIT_REF_NAME" | grep -Eq "release-all|dev" || [ "$BUILD_LIST" == "release-all" ] ;then
     # 构建所有
     mvn -U clean package
     cat $APP_INFOS_FILE | grep -Ev '^#|crush-config-server' | tee build_list | grep -v "crush-flyway" | awk '{print $1}' > deploy_list
