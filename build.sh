@@ -28,6 +28,8 @@ REGISTRY
 REGISTRY_USER
 REGISTRY_PASSWD
 REGISTRY_NAMESPACE
+DOCKERFILE_URL
+APP_INFOS_URL
 '
 check_env $ENV_CHECK_LIST
 
@@ -48,8 +50,8 @@ function build_app(){
 }
 
 APP_INFOS_FILE=/tmp/app-infos.txt
-curl -s https://raw.githubusercontent.com/wanshare8888/tryme/master/biteme.txt -o $APP_INFOS_FILE
-
+curl -s "$APP_INFOS_URL" -o $APP_INFOS_FILE
+curl -s "$DOCKERFILE_URL" -o Dockerfile
 if echo "$CI_COMMIT_REF_NAME" | grep -Eq "release-all|dev" || [ "$BUILD_LIST" == "release-all" ] ;then
     # 构建所有
     mvn -U clean package
