@@ -52,10 +52,12 @@ function build_app(){
 APP_INFOS_FILE=/tmp/app-infos.txt
 curl -s "$APP_INFOS_URL" -o $APP_INFOS_FILE
 curl -s "$DOCKERFILE_URL" -o Dockerfile
+BUILD_EXCLUDE_LIST="${BUILD_EXCLUDE_LIST/,/|}"
+DEPLOY_EXCLUDE_LIST="${DEPLOY_EXCLUDE_LIST/,/|}"
 if echo "$CI_COMMIT_REF_NAME" | grep -Eq "release-all|dev" || [ "$BUILD_LIST" == "release-all" ] ;then
     # 构建所有
     mvn -U clean package
-    cat $APP_INFOS_FILE | grep -Ev '^#|crush-config-server' | tee build_list | grep -v "crush-flyway" | awk '{print $1}' > deploy_list
+    cat $APP_INFOS_FILE | grep -Ev "^#|${BUILD_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" | tee build_list | grep -Ev "crush-flyway|${DEPLOY_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" | awk '{print $1}' > deploy_list
     cat build_list | awk '{print $1,$3,$4}' | while read line;do
         build_app $line
     done
