@@ -33,8 +33,9 @@ APP_INFOS_URL
 '
 check_env $ENV_CHECK_LIST
 
+cat ~/.docker/config.json
 docker version
-docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASSWD" "$REGISTRY"
+#docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASSWD" "$REGISTRY"
 
 function build_app(){
     local app_name=$1
