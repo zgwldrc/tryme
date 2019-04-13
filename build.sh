@@ -3,7 +3,7 @@
 # 运行环境: zgwldrc/maven-and-docker
 # docker run --rm -it zgwldrc/maven-and-docker sh
 # 该脚本用于crush项目在gitlab-ci系统中的构建
-set -e
+set -xe
 function include_url_lib() {
   local t="$(mktemp)"
   local url="$1"
