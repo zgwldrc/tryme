@@ -3,7 +3,7 @@
 # 运行环境: zgwldrc/maven-and-docker
 # docker run --rm -it zgwldrc/maven-and-docker sh
 # 该脚本用于crush项目在gitlab-ci系统中的构建
-set -xe
+set -e
 function include_url_lib() {
   local t="$(mktemp)"
   local url="$1"
@@ -41,7 +41,7 @@ function build_app(){
     local pkg_prefix=$2
     local build_context=$3
     local dockerfile=${4:-Dockerfile}
-    local image_url=$REGISTRY/$REGISTRY_NAMESPACE/${app_name}:${CI_COMMIT_SHA:0:8}
+    local image_url=${REGISTRY#http*://}/$REGISTRY_NAMESPACE/${app_name}:${CI_COMMIT_SHA:0:8}
     docker build -f $dockerfile \
         --build-arg PKG_NAME=${pkg_prefix}-2.0.0-SNAPSHOT.jar \
         -t $image_url \
