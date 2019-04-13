@@ -33,6 +33,7 @@ APP_INFOS_URL
 '
 check_env $ENV_CHECK_LIST
 
+docker version
 docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASSWD" "$REGISTRY"
 
 function build_app(){
