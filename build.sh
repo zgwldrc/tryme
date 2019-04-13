@@ -47,7 +47,9 @@ function build_app(){
         -t $image_url \
         $build_context
     docker push $image_url
-    docker image rm $image_url
+    if [ "$IMAGE_CLEAN" == "true" ];then
+      docker image rm $image_url
+    fi
 }
 
 APP_INFOS_FILE=/tmp/app-infos.txt
