@@ -3,7 +3,6 @@
 # 运行环境: zgwldrc/maven-and-docker
 # docker run --rm -it zgwldrc/maven-and-docker sh
 # 该脚本用于ybt项目在gitlab-ci系统中的构建
-set -x
 function include_url_lib() {
   local t="$(mktemp)"
   local url="$1"
