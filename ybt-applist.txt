@@ -1,8 +1,11 @@
-# MODULE-PATH                   ARTIFACTID        VERSION
+# MODULE-PATH                 ARTIFACTID           VERSION
 webapps/main                  main-web          0.0.1-SNAPSHOT
 webapps/staff                 staff-web         0.0.1-SNAPSHOT
+webapps/wallet		            wallet-web	      0.0.1-SNAPSHOT
 workers/sms-sender            sms-sender        0.0.1-SNAPSHOT
-workers/mail-sender           mail-sender       0.0.1-SNAPSHOT
 jobs/otc-job                  otc-job           0.0.1-SNAPSHOT
 jobs/security                 security-job      0.0.1-SNAPSHOT
+jobs/quotation-job            quotation-job     0.0.1-SNAPSHOT
+jobs/statistics-job           statistics-job    0.0.1-SNAPSHOT
+jobs/migration-job            migration-job   	0.0.1-SNAPSHOT
 flyway                        flyway            2.0.0-SNAPSHOT
