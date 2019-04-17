@@ -65,7 +65,7 @@ if echo "$CI_COMMIT_REF_NAME" | grep -Eq "release-all" || [ "$BUILD_LIST" == "re
     # 构建所有
     mvn -U clean package
     cat $APP_INFOS_FILE | grep -Ev "^#|${BUILD_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" | tee build_list | grep -Ev "${DEPLOY_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" | awk '{print '$PROJECT_NAME-'$2}' > deploy_list
-    awk "{print \"$PROJECT_NAME\-"\$2,\$2\"-\"\$3\".jar\",\$1}" build_list | while read app_name package_name module_path;do
+    awk "{print \"$PROJECT_NAME-\"\$2,\$2\"-\"\$3\".jar\",\$1}" build_list | while read app_name package_name module_path;do
         #echo $app_name $package_name ${module_path}/target
         build_app $app_name $package_name ${module_path}/target
     done
