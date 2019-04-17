@@ -28,8 +28,17 @@ REGISTRY
 REGISTRY_USER
 REGISTRY_PASSWD
 REGISTRY_NAMESPACE
+DOCKERFILE_URL
+APP_LIST_URL
+PROJECT_NAME
 '
 check_env $ENV_CHECK_LIST
+
+APP_INFOS_FILE=/tmp/app-infos.txt
+curl -s $APP_LIST_URL -o $APP_INFOS_FILE
+curl -s $DOCKERFILE_URL -o Dockerfile
+BUILD_EXCLUDE_LIST="${BUILD_EXCLUDE_LIST/,/|}"
+DEPLOY_EXCLUDE_LIST="${DEPLOY_EXCLUDE_LIST/,/|}"
 
 docker login -u$REGISTRY_USER -p$REGISTRY_PASSWD $REGISTRY
 
@@ -37,24 +46,26 @@ function build_app(){
     local app_name=$1
     local package_name=$2
     local build_context=$3
-    local dockerfile=${4:-Dockerfile}
+
     local image_url=$REGISTRY/$REGISTRY_NAMESPACE/${app_name}:${CI_COMMIT_SHA:0:8}
-    docker build -f $dockerfile \
+    docker build -f Dockerfile \
         --build-arg PKG_NAME=${package_name} \
         -t $image_url \
         $build_context
     docker push $image_url
-    docker image rm $image_url
+    
+    if [ "$IMAGE_CLEAN" == "true" ];then
+      docker image rm $image_url
+    fi
 }
 
-APP_INFOS_FILE=/tmp/app-infos.txt
-curl -s https://raw.githubusercontent.com/wanshare8888/tryme/master/ybt-applist.txt -o $APP_INFOS_FILE
+
 
 if echo "$CI_COMMIT_REF_NAME" | grep -Eq "release-all" || [ "$BUILD_LIST" == "release-all" ] ;then
     # 构建所有
     mvn -U clean package
-    cat $APP_INFOS_FILE | grep -Ev '^#|ybt-config-server' | tee build_list | grep -v "ybt-flyway" | awk '{print $1}' > deploy_list
-    awk '{print $1,$3"-"$4".jar",$2}' build_list | while read app_name package_name module_path;do
+    cat $APP_INFOS_FILE | grep -Ev "^#|${BUILD_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" | tee build_list | grep -Ev "${DEPLOY_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" | awk '{print '$PROJECT_NAME-'$2}' > deploy_list
+    awk "{print $PROJECT_NAME-\$2,\$2\"-\"\$3\".jar\",\$1}" build_list | while read app_name package_name module_path;do
         #echo $app_name $package_name ${module_path}/target
         build_app $app_name $package_name ${module_path}/target
     done
@@ -78,12 +89,12 @@ else
         exit 1
     fi
     # 为mvn命令行构造模块列表参数
-    mod_args=$(echo `awk '{print $2}' build_list` | tr ' ' ',')
+    mod_args=$(echo `awk '{print $1}' build_list` | tr ' ' ',')
     mvn clean package -U -pl $mod_args -am
     # 调用 build_app 完成 docker build 及 docker push
-    awk '{print $1,$3"-"$4".jar",$2}' build_list | while read app_name package_name module_path;do
+    awk "{print $PROJECT_NAME-\$2,\$2\"-\"\$3\".jar\",\$1}" build_list | while read app_name package_name module_path;do
         #echo $app_name $package_name ${module_path}/target
         build_app $app_name $package_name ${module_path}/target
     done
-    awk '{print $1}' build_list | grep -Ev 'ybt-flyway' > deploy_list
+    awk '{print '$PROJECT_NAME-'$2}' build_list | grep -Ev "${DEPLOY_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" > deploy_list
 fi
