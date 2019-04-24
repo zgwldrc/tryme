@@ -4,7 +4,7 @@ crush-staff                                               webapps/staff         
 crush-wallet                                              webapps/wallet		                                  wallet-web	                          0.0.1-SNAPSHOT
 crush-sms-sender                                          workers/sms-sender                                      sms-sender                              0.0.1-SNAPSHOT
 crush-otc-job                                             jobs/otc-job                                            otc-job                                 0.0.1-SNAPSHOT
-crush-security                                            jobs/security                                           security-job                            0.0.1-SNAPSHOT
+crush-security-job                                           jobs/security                                           security-job                            0.0.1-SNAPSHOT
 crush-quotation-job                                       jobs/quotation-job                                      quotation-job                           0.0.1-SNAPSHOT
 crush-statistics-job                                      jobs/statistics-job                                     statistics-job                          0.0.1-SNAPSHOT
 crush-migration-job                                       jobs/migration-job                                      migration-job                           0.0.1-SNAPSHOT
