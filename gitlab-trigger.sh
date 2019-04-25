@@ -32,6 +32,6 @@ id=`curl $PROXY_SETTING -s -X POST \
     -F "variables[DEPLOY_SCRIPT]=$DEPLOY_SCRIPT" \
     -F "variables[BUILD_EXCLUDE_LIST]=$BUILD_EXCLUDE_LIST" \
     -F "variables[DEPLOY_EXCLUDE_LIST]=$DEPLOY_EXCLUDE_LIST" \
-    $TRIGGER_URL | jq '.'`
+    $TRIGGER_URL | jq '.id'`
 
 open $PIPELINES_URL/$id
