@@ -13,15 +13,11 @@ crush-venture                                           webapps/venture         
 crush-tenant                                            webapps/tenant                                          tenant-web                              2.0.0-SNAPSHOT
 crush-otc                                               webapps/otc                                             otc-web                                 2.0.0-SNAPSHOT
 crush-wallet                                            webapps/wallet                                          wallet-web                              2.0.0-SNAPSHOT
-crush-websocket-publisher                               webapps/websocket-publisher                             websocket-publisher                     2.0.0-SNAPSHOT
 crush-ybt                                               webapps/ybt                                             ybt                                     2.0.0-SNAPSHOT
 crush-clearing-handler                                  apps/clearing-handler                                   clearing-handler                        2.0.0-SNAPSHOT
 crush-stopprice-handler                                 apps/stopPrice-handler                                  stopPrice-handler                       2.0.0-SNAPSHOT
 crush-dashboard-dataagent                               apps/dashboard-dataagent                                dashboard-dataagent                     2.0.0-SNAPSHOT
-crush-depth-handler                                     apps/depth-handler                                      depth-handler                           2.0.0-SNAPSHOT
-crush-tradehistory-handler                              apps/tradeHistory-handler                               tradeHistory-handler                    2.0.0-SNAPSHOT
 crush-api-rpc                                           apps/api-rpc                                            api-rpc                                 2.0.0-SNAPSHOT
-crush-quotation-job                                     jobs/quotation                                          quotation-job                           2.0.0-SNAPSHOT
 crush-market-job                                        jobs/market                                             market-job                              2.0.0-SNAPSHOT
 crush-entrust-job                                       jobs/entrust                                            entrust-job                             2.0.0-SNAPSHOT 
 crush-notify-job                                        jobs/notify-job                                         notify-job                              2.0.0-SNAPSHOT
