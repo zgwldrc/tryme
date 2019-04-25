@@ -3,7 +3,7 @@
 # 运行环境: zgwldrc/maven-and-docker
 # docker run --rm -it zgwldrc/maven-and-docker sh
 # 该脚本用于crush项目在gitlab-ci系统中的构建
-# BUILD_EXCLUDE_LIST
+# BUILD_EXCLUDE_LIS
 # DEPLOY_EXCLUDE_LIST
 # REGISTRY
 # REGISTRY_USER
@@ -67,13 +67,20 @@ APP_INFOS_FILE=/tmp/app-infos.txt
 curl -s "$APP_INFOS_URL" -o $APP_INFOS_FILE
 curl -s "$DOCKERFILE_URL" -o Dockerfile
 
-BUILD_EXCLUDE_LIST="${BUILD_EXCLUDE_LIST/,/|}"
-DEPLOY_EXCLUDE_LIST="${DEPLOY_EXCLUDE_LIST/,/|}"
+BUILD_EXCLUDE_LIST=(${BUILD_EXCLUDE_LIST//,/ })
+BUILD_EXCLUDE_LIST=(${BUILD_EXCLUDE_LIST[@]/#/^})
+BUILD_EXCLUDE_LIST="${BUILD_EXCLUDE_LIST[@]/%/\\b}"
+BUILD_EXCLUDE_LIST="${BUILD_EXCLUDE_LIST// /|}"
+
+DEPLOY_EXCLUDE_LIST=(${DEPLOY_EXCLUDE_LIST//,/ })
+DEPLOY_EXCLUDE_LIST=(${DEPLOY_EXCLUDE_LIST[@]/#/^})
+DEPLOY_EXCLUDE_LIST="${DEPLOY_EXCLUDE_LIST[@]/%/\\b}"
+DEPLOY_EXCLUDE_LIST="${DEPLOY_EXCLUDE_LIST// /|}"
 
 if [ "$BUILD_LIST" == "release-all" ] ;then
     # 构建所有
     mvn -U clean package
-    cat $APP_INFOS_FILE | grep -Ev "^#|${BUILD_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" | tee build_list | grep -Ev "${DEPLOY_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" | awk '{print $1}' > deploy_list
+    cat $APP_INFOS_FILE | grep -Ev "^#|${BUILD_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" | tee build_list | grep -Ev "${DEPLOY_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" > deploy_list
     awk '{print $1,$3"-"$4".jar",$2"/target/"}' build_list | while read app_name package_name build_context;do
         build_app $app_name $package_name $build_context
     done
@@ -100,5 +107,5 @@ else
     awk '{print $1,$3"-"$4".jar",$2"/target/"}' build_list | while read app_name package_name build_context;do
         build_app $app_name $package_name $build_context
     done
-    awk '{print $1}' build_list | grep -Ev '${DEPLOY_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}' > deploy_list
+    grep -Ev "${DEPLOY_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" build_list > deploy_list
 fi
