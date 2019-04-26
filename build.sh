@@ -64,6 +64,10 @@ function build_app(){
 }
 
 APP_INFOS_FILE=/tmp/app-infos.txt
+if [ ! -z "$MVN_SETTINGS" ];then
+  curl -s "$MVN_SETTINGS" -o /tmp/settings.xml
+  alias mvn='mvn -s /tmp/settings.xml'
+fi
 curl -s "$APP_INFOS_URL" -o $APP_INFOS_FILE
 curl -s "$DOCKERFILE_URL" -o Dockerfile
 
