@@ -17,7 +17,6 @@ DEPLOY_EXCLUDE_LIST=""
 TRIGGER_URL=""
 PIPELINES_URL=""
 
-
 id=`curl $PROXY_SETTING -s -X POST \
     -F token=$TOKEN \
     -F "ref=$BRANCH" \

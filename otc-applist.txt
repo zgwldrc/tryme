@@ -1,10 +1,10 @@
-# K8S-APPNAME               MODULE-PATH                   PKG-PREFIX              BUILD-CONTEXT 
-crush-staff                 webapps/staff                 staff-web               webapps/staff/target/
-crush-otc                   webapps/otc                   otc-web                 webapps/otc/target/
-crush-wallet                webapps/wallet                wallet-web              webapps/wallet/target/
-crush-otc-job               jobs/otc-job                  otc-job                 jobs/otc-job/target/
-crush-security-job          jobs/security                 security-job            jobs/security/target/
-crush-sms-sender            workers/sms-sender            sms-sender              workers/sms-sender/target/
-crush-mail-sender           workers/mail-sender           mail-sender             workers/mail-sender/target/
-crush-flyway                flyway                        flyway                  flyway/target/
-crush-config-server         config-server                 config-server           config-server/target/
+# K8S-APPNAME               MODULE-PATH                   ARTIFACT-ID             VERSION
+crush-staff                 webapps/staff                 staff-web               2.0.0-SNAPSHOT
+crush-otc                   webapps/otc                   otc-web                 2.0.0-SNAPSHOT
+crush-wallet                webapps/wallet                wallet-web              2.0.0-SNAPSHOT
+crush-otc-job               jobs/otc-job                  otc-job                 2.0.0-SNAPSHOT
+crush-security-job          jobs/security                 security-job            2.0.0-SNAPSHOT
+crush-sms-sender            workers/sms-sender            sms-sender              2.0.0-SNAPSHOT
+crush-mail-sender           workers/mail-sender           mail-sender             2.0.0-SNAPSHOT
+crush-flyway                flyway                        flyway                  2.0.0-SNAPSHOT
+crush-config-server         config-server                 config-server           2.0.0-SNAPSHOT
