@@ -67,8 +67,7 @@ APP_INFOS_FILE=/tmp/app-infos.txt
 if [ ! -z "$MVN_SETTINGS" ];then
   echo "Found MVN_SETTINGS: $MVN_SETTINGS"
   echo "Downloading..."
-  curl -s "$MVN_SETTINGS" -o /tmp/settings.xml && echo "Download Success! " || echo "Download Failed."
-  alias mvn='mvn -s /tmp/settings.xml'
+  curl -s "$MVN_SETTINGS" -o $HOME/.m2/settings.xml && echo "Download Success! " || echo "Download Failed."
 fi
 curl -s "$APP_INFOS_URL" -o $APP_INFOS_FILE
 curl -s "$DOCKERFILE_URL" -o Dockerfile
