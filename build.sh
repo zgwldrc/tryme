@@ -67,6 +67,7 @@ APP_INFOS_FILE=/tmp/app-infos.txt
 if [ ! -z "$MVN_SETTINGS" ];then
   echo "Found MVN_SETTINGS: $MVN_SETTINGS"
   echo "Downloading..."
+  mkdir -p $HOME/.m2/
   curl -s "$MVN_SETTINGS" -o $HOME/.m2/settings.xml && echo "Download Success! " || echo "Download Failed."
 fi
 curl -s "$APP_INFOS_URL" -o $APP_INFOS_FILE
