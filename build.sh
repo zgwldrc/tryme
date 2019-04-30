@@ -1,8 +1,9 @@
 # 作者: 夏禹
 # 邮箱: zgwldrc@163.com
 # 运行环境: zgwldrc/maven-and-docker
-# docker run --rm -it zgwldrc/maven-and-docker sh
-# 该脚本用于crush项目在gitlab-ci系统中的构建
+# docker run --rm -it zgwldrc/maven-and-docker bash
+# 该脚本用于[多模块] Java 项目在gitlab-ci系统中的构建
+# -------------------- 必要的环境变量
 # BUILD_EXCLUDE_LIS
 # DEPLOY_EXCLUDE_LIST
 # REGISTRY
@@ -12,6 +13,12 @@
 # DOCKERFILE_URL
 # APP_INFOS_URL
 # BUILD_LIST
+# -------------------- 可选的环境变量
+# AWS_ACCESS_KEY_ID
+# AWS_SECRET_ACCESS_KEY
+# AWS_DEFAULT_REGION
+# MVN_SETTINGS
+# IMAGE_CLEAN
 set -e
 function include_url_lib() {
   local t="$(mktemp)"
@@ -44,6 +51,10 @@ BUILD_LIST
 check_env $ENV_CHECK_LIST
 
 docker version
+
+if [[ ! -z "$AWS_ACCESS_KEY_ID" && ! -z "$AWS_SECRET_ACCESS_KEY" && ! -z "$AWS_DEFAULT_REGION" ]] ;then
+  REGISTRY_PASSWD=$(aws ecr get-login --no-include-email --region "$AWS_DEFAULT_REGION" | awk '{print $6}')
+fi
 docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASSWD" "$REGISTRY"
 
 function build_app(){
@@ -86,32 +97,37 @@ DEPLOY_EXCLUDE_LIST="${DEPLOY_EXCLUDE_LIST// /|}"
 if [ "$BUILD_LIST" == "release-all" ] ;then
     # 构建所有
     mvn -U clean package
-    cat $APP_INFOS_FILE | grep -Ev "^#|${BUILD_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" | tee build_list | grep -Ev "${DEPLOY_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" > deploy_list
+    grep -Ev "^#|${BUILD_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" $APP_INFOS_FILE| tee build_list | grep -Ev "${DEPLOY_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" > deploy_list
     awk '{print $1,$3"-"$4".jar",$2"/target/"}' build_list | while read app_name package_name build_context;do
         build_app $app_name $package_name $build_context
     done
 else
-    # 构建TAG中包含的模块
-    # 根据TAG过滤出需要构建的列表 build_list
-    O_IFS="$IFS"
-    IFS=","
-    for app_name in $BUILD_LIST;do
-        if record=$(grep "^$app_name[[:blank:]]" $APP_INFOS_FILE);then
-            echo "$record" >> build_list
-        fi
-    done
-    IFS="$O_IFS"
+    BUILD_LIST=( ${BUILD_LIST//,/ } )
+    BUILD_LIST=( ${BUILD_LIST[@]/#/^} )
+    BUILD_LIST="${BUILD_LIST[@]/%/\\b}"
+    BUILD_LIST="${BUILD_LIST// /|}"
+    # 根据$BUILD_LIST过滤出需要构建的列表 build_list
+    echo -e "\033[32mThis is the build_list:"
+    grep -E "$BUILD_LIST" $APP_INFOS_FILE | tee > build_list
+    echo -e "\033[0m"
 
     if [ ! -s build_list ];then
         echo build_list size is 0, nothing to do.
         exit 1
     fi
+    
+    # 生成部署列表 deploy_list
+    echo -e "\033[32mThis is the deploy_list:"
+    grep -Ev "${DEPLOY_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" build_list > deploy_list
+    echo -e "\033[0m"
+     
     # 为mvn命令行构造模块列表参数
     mod_args=$(echo `awk '{print $2}' build_list` | tr ' ' ',')
     mvn clean package -U -pl $mod_args -am
+    
     # 调用 build_app 完成 docker build 及 docker push
     awk '{print $1,$3"-"$4".jar",$2"/target/"}' build_list | while read app_name package_name build_context;do
         build_app $app_name $package_name $build_context
     done
-    grep -Ev "${DEPLOY_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" build_list > deploy_list
+    
 fi
