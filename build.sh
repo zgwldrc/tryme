@@ -8,7 +8,7 @@
 # DEPLOY_EXCLUDE_LIST
 # REGISTRY
 # REGISTRY_USER
-# REGISTRY_PASSWD
+# REGISTRY_PASSWD                   :如果使用AWS ECR 则通过awscli自动生成
 # REGISTRY_NAMESPACE
 # DOCKERFILE_URL
 # APP_INFOS_URL
@@ -38,6 +38,10 @@ function check_env(){
   done
 }
 
+if [[ ! -z "$AWS_ACCESS_KEY_ID" && ! -z "$AWS_SECRET_ACCESS_KEY" && ! -z "$AWS_DEFAULT_REGION" ]] ;then
+  REGISTRY_PASSWD=$(aws ecr get-login --no-include-email --region "$AWS_DEFAULT_REGION" | awk '{print $6}')
+fi
+
 # 检查必要的环境变量
 ENV_CHECK_LIST='
 REGISTRY
@@ -51,10 +55,6 @@ BUILD_LIST
 check_env $ENV_CHECK_LIST
 
 docker version
-
-if [[ ! -z "$AWS_ACCESS_KEY_ID" && ! -z "$AWS_SECRET_ACCESS_KEY" && ! -z "$AWS_DEFAULT_REGION" ]] ;then
-  REGISTRY_PASSWD=$(aws ecr get-login --no-include-email --region "$AWS_DEFAULT_REGION" | awk '{print $6}')
-fi
 docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASSWD" "$REGISTRY"
 
 function build_app(){
