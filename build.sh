@@ -108,7 +108,7 @@ else
     BUILD_LIST="${BUILD_LIST// /|}"
     # 根据$BUILD_LIST过滤出需要构建的列表 build_list
     echo -e "\033[32mThis is the build_list:"
-    grep -E "$BUILD_LIST" $APP_INFOS_FILE | tee > build_list
+    grep -E "$BUILD_LIST" $APP_INFOS_FILE | tee build_list
     echo -e "\033[0m"
 
     if [ ! -s build_list ];then
@@ -118,7 +118,7 @@ else
     
     # 生成部署列表 deploy_list
     echo -e "\033[32mThis is the deploy_list:"
-    grep -Ev "${DEPLOY_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" build_list > deploy_list
+    grep -Ev "${DEPLOY_EXCLUDE_LIST:-NOTHINGTOEXCLUDE}" build_list | tee deploy_list
     echo -e "\033[0m"
      
     # 为mvn命令行构造模块列表参数
