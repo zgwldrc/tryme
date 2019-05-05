@@ -6,6 +6,7 @@ crush-quotation-jsonrpc-deal                            quotation/quotation-json
 crush-quotation-jsonrpc-depth                           quotation/quotation-jsonrpc-depth                       quotation-jsonrpc-depth                 2.0.0-SNAPSHOT
 crush-quotation-ranking                                 quotation/quotation-ranking                             quotation-ranking                       2.0.0-SNAPSHOT
 crush-quotation-ws-server                               quotation/quotation-ws-server                           quotation-ws-server                     2.0.0-SNAPSHOT
+crush-quotation-flyway                                  quotation/quotation-flyway                              quotation-flyway                        2.0.0-SNAPSHOT
 crush-main                                              webapps/main                                            main-web                                2.0.0-SNAPSHOT      
 crush-staff                                             webapps/staff                                           staff-web                               2.0.0-SNAPSHOT      
 crush-sponsor                                           webapps/sponsor                                         sponsor-web                             2.0.0-SNAPSHOT     
